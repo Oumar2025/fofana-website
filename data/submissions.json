@@ -47,5 +47,54 @@
     },
     "timestamp": "2026-07-16T13:46:36.900Z",
     "id": "1784209596903"
+  },
+  {
+    "companyInfo": {
+      "companyName": "sdfreergg555",
+      "establishYear": "54",
+      "companyAddress": "fsxgh",
+      "warehouseLocations": "jdkjk"
+    },
+    "suppliers": [
+      {
+        "companyName": "dkjnv",
+        "country": "djjg",
+        "city": "souihgior;klg",
+        "contact": "laruihkf",
+        "products": "sirgjkdioug"
+      }
+    ],
+    "importInfo": {
+      "products": "irgfbpoekldf",
+      "quantity": "rje7y8ui5jg",
+      "frequency": "hebdomadaire",
+      "shippingTime": "ireiuhug",
+      "shippingMethod": "maritime"
+    },
+    "salesInfo": {
+      "fastestSelling": "urutyujkmfgnghgyoke",
+      "slowestSelling": "jdrielkr[rl,g,",
+      "highestProfit": "wprjrklgj9i",
+      "expireProducts": "lsoruhpoeour"
+    },
+    "customers": {
+      "countries": "riuhnlagk;a",
+      "biggestCustomers": "aoriuhjneoa",
+      "salesType": "les deux"
+    },
+    "warehouses": {
+      "count": "6963",
+      "capacity": "kaiurk",
+      "locations": "jdkjk",
+      "products": "akurfyj"
+    },
+    "challenges": {
+      "mainProblems": "8r978ouii",
+      "timeConsumingTasks": "uryuhj",
+      "difficultDecisions": "kiroyfuj",
+      "aiExpectations": "oruhkl"
+    },
+    "timestamp": "2026-07-16T14:23:00.167Z",
+    "id": "1784211780167"
   }
 ]

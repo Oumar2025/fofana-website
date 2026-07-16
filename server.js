@@ -6,8 +6,10 @@ const cors = require('cors');
 const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
 
+// For Railway deployment - use the port they provide
+const PORT = process.env.PORT || 3000;
+
 const app = express();
-const PORT = 3000;
 
 // Middleware
 app.use(cors());
@@ -333,8 +335,8 @@ app.get('/download-pdf/:id', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on port ${PORT}`);
     console.log(`🔐 Login: http://localhost:${PORT}`);
     console.log(`📊 Admin: http://localhost:${PORT}/admin.html`);
     console.log(`📝 Form: http://localhost:${PORT}/form.html`);

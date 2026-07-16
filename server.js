@@ -26,10 +26,15 @@ if (!fs.existsSync(pdfDir)) {
 }
 
 // ==================== EMAIL CONFIGURATION (Brevo) ====================
-const EMAIL_USER = process.env.EMAIL_USER || 'hp.oumaroulife2023@gmail.com';
+// ==================== EMAIL CONFIGURATION (Brevo) ====================
+const EMAIL_USER = process.env.EMAIL_USER || 'b23e48001@smtp-brevo.com'; // Use Brevo SMTP login
 const EMAIL_PASS = process.env.EMAIL_PASS || '';
 const EMAIL_TO = process.env.EMAIL_TO || 'f.oumarou78@gmail.com';
 const EMAIL_FROM = process.env.EMAIL_FROM || 'hp.oumaroulife2023@gmail.com';
+
+console.log('📧 Email configuration:');
+console.log(`   User: ${EMAIL_USER}`);
+console.log(`   To: ${EMAIL_TO}`);
 
 const transporter = nodemailer.createTransport({
     host: 'smtp-relay.brevo.com',
@@ -39,13 +44,10 @@ const transporter = nodemailer.createTransport({
         user: EMAIL_USER,
         pass: EMAIL_PASS
     },
+    debug: false, // Set to true for debugging
     tls: {
-        rejectUnauthorized: false,
-        ciphers: "SSLv3"
-    },
-    connectionTimeout: 30000,
-    greetingTimeout: 30000,
-    socketTimeout: 30000
+        rejectUnauthorized: false
+    }
 });
 
 // Verify email connection
@@ -59,6 +61,7 @@ transporter.verify(function (error, success) {
         console.log('✅ Email configured successfully with Brevo!');
     }
 });
+// ============================================================
 // ============================================================
 
 // Route to save form data

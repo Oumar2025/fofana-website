@@ -6,10 +6,8 @@ const cors = require('cors');
 const PDFDocument = require('pdfkit');
 const nodemailer = require('nodemailer');
 
-// For Railway deployment - use the port they provide
-const PORT = process.env.PORT || 3000;
-
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
@@ -28,34 +26,39 @@ if (!fs.existsSync(pdfDir)) {
 }
 
 // ==================== EMAIL CONFIGURATION (Brevo) ====================
-const EMAIL_USER = process.env.EMAIL_USER || 'hp.oumaroulife2023@gmail.com'; // Your Brevo login email
-const EMAIL_PASS = process.env.EMAIL_PASS || ''; // Your SMTP Key
-const EMAIL_TO = process.env.EMAIL_TO || 'f.oumarou78@gmail.com'; // Where to receive notifications
-const EMAIL_FROM = process.env.EMAIL_FROM || 'hp.oumaroulife2023@gmail.com'; // Sender email
+const EMAIL_USER = process.env.EMAIL_USER || 'hp.oumaroulife2023@gmail.com';
+const EMAIL_PASS = process.env.EMAIL_PASS || '';
+const EMAIL_TO = process.env.EMAIL_TO || 'f.oumarou78@gmail.com';
+const EMAIL_FROM = process.env.EMAIL_FROM || 'hp.oumaroulife2023@gmail.com';
 
 const transporter = nodemailer.createTransport({
     host: 'smtp-relay.brevo.com',
     port: 587,
-    secure: false, // true for 465, false for other ports
+    secure: false,
     auth: {
         user: EMAIL_USER,
         pass: EMAIL_PASS
     },
     tls: {
-        rejectUnauthorized: false
-    }
+        rejectUnauthorized: false,
+        ciphers: "SSLv3"
+    },
+    connectionTimeout: 30000,
+    greetingTimeout: 30000,
+    socketTimeout: 30000
 });
 
 // Verify email connection
 transporter.verify(function (error, success) {
     if (error) {
         console.log('❌ Email configuration error:');
-        console.log(error);
+        console.log(error.message);
+        console.log('⚠️  Email will be disabled but the app will continue to work');
+        console.log('📧 You can still download PDFs from the admin panel');
     } else {
         console.log('✅ Email configured successfully with Brevo!');
     }
 });
-// ============================================================
 // ============================================================
 
 // Route to save form data
@@ -87,13 +90,13 @@ app.post('/submit-form', async (req, res) => {
         // Generate PDF
         const pdfPath = await generatePDF(formData);
 
-        // Send email with PDF attachment
+        // Try to send email but don't fail if it doesn't work
         try {
             await sendEmailWithPDF(formData, pdfPath);
             console.log('✅ Email sent successfully');
         } catch (emailError) {
-            console.error('❌ Email error:', emailError.message);
-            // Still return success - form was saved even if email failed
+            console.error('❌ Email error (non-critical):', emailError.message);
+            // Email failed but we don't stop the process
         }
 
         res.json({
@@ -109,18 +112,13 @@ app.post('/submit-form', async (req, res) => {
 
 // Function to send email with PDF
 async function sendEmailWithPDF(formData, pdfPath) {
-    // Get company name or use default
     const companyName = formData.companyInfo.companyName || 'Client';
 
-    // Email content in French
-    async function sendEmailWithPDF(formData, pdfPath) {
-        const companyName = formData.companyInfo.companyName || 'Client';
-
-        const mailOptions = {
-            from: `"FOFANA Confiserie" <${EMAIL_FROM}>`,
-            to: EMAIL_TO,
-            subject: `📋 Nouvelle soumission - ${companyName} - FOFANA Confiserie`,
-            html: `
+    const mailOptions = {
+        from: `"FOFANA Confiserie" <${EMAIL_FROM}>`,
+        to: EMAIL_TO,
+        subject: `📋 Nouvelle soumission - ${companyName} - FOFANA Confiserie`,
+        html: `
             <!DOCTYPE html>
             <html>
             <head>
@@ -131,7 +129,6 @@ async function sendEmailWithPDF(formData, pdfPath) {
                     .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
                     .info-box { background: white; padding: 15px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #667eea; }
                     .footer { text-align: center; margin-top: 20px; color: #888; font-size: 12px; }
-                    .highlight { color: #667eea; font-weight: bold; }
                 </style>
             </head>
             <body>
@@ -174,12 +171,12 @@ async function sendEmailWithPDF(formData, pdfPath) {
                         <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ff9800;">
                             <p style="margin: 0; color: #e65100;">
                                 <strong>🕐 Soumis le:</strong> ${new Date(formData.timestamp).toLocaleString('fr-FR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            })}
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        })}
                             </p>
                         </div>
                     </div>
@@ -191,160 +188,159 @@ async function sendEmailWithPDF(formData, pdfPath) {
             </body>
             </html>
         `,
-            attachments: [
-                {
-                    filename: `FOFANA_${formData.companyInfo.companyName}_${formData.id}.pdf`,
-                    path: pdfPath,
-                    contentType: 'application/pdf'
-                }
-            ]
-        };
-
-        const info = await transporter.sendMail(mailOptions);
-        console.log('📧 Email sent:', info.messageId);
-        return info;
-    }
-
-    // Function to generate PDF
-    async function generatePDF(formData) {
-        return new Promise((resolve, reject) => {
-            try {
-                const doc = new PDFDocument();
-                const pdfPath = path.join(__dirname, 'pdfs', `submission_${formData.id}.pdf`);
-                const writeStream = fs.createWriteStream(pdfPath);
-
-                doc.pipe(writeStream);
-
-                // Header
-                doc.fontSize(20)
-                    .text('FOFANA CONFISERIE', { align: 'center' })
-                    .fontSize(16)
-                    .text('Formulaire d\'Informations Commerciales', { align: 'center' })
-                    .moveDown();
-
-                doc.fontSize(12)
-                    .text(`Date de soumission: ${new Date(formData.timestamp).toLocaleDateString('fr-FR')}`)
-                    .moveDown();
-
-                // Company Information
-                doc.fontSize(14).text('1. INFORMATIONS SUR L\'ENTREPRISE', { underline: true })
-                    .fontSize(12)
-                    .text(`Nom officiel: ${formData.companyInfo.companyName}`)
-                    .text(`Année de création: ${formData.companyInfo.establishYear}`)
-                    .text(`Adresse: ${formData.companyInfo.companyAddress}`)
-                    .text(`Emplacement des entrepôts: ${formData.companyInfo.warehouseLocations}`)
-                    .moveDown();
-
-                // Suppliers
-                doc.fontSize(14).text('2. INFORMATIONS SUR LES FOURNISSEURS', { underline: true })
-                    .fontSize(12);
-                formData.suppliers.forEach((supplier, index) => {
-                    doc.text(`Fournisseur ${index + 1}:`)
-                        .text(`  - Entreprise: ${supplier.companyName}`)
-                        .text(`  - Pays: ${supplier.country}`)
-                        .text(`  - Ville: ${supplier.city}`)
-                        .text(`  - Contact: ${supplier.contact}`)
-                        .text(`  - Produits: ${supplier.products}`)
-                        .moveDown(0.5);
-                });
-                doc.moveDown();
-
-                // Import Information
-                doc.fontSize(14).text('3. INFORMATIONS SUR LES IMPORTATIONS', { underline: true })
-                    .fontSize(12)
-                    .text(`Produits importés: ${formData.importInfo.products}`)
-                    .text(`Quantité moyenne: ${formData.importInfo.quantity}`)
-                    .text(`Fréquence: ${formData.importInfo.frequency}`)
-                    .text(`Durée de transport: ${formData.importInfo.shippingTime}`)
-                    .text(`Moyen de transport: ${formData.importInfo.shippingMethod}`)
-                    .moveDown();
-
-                // Sales Information
-                doc.fontSize(14).text('4. INFORMATIONS SUR LES VENTES', { underline: true })
-                    .fontSize(12)
-                    .text(`Produits les plus vendus: ${formData.salesInfo.fastestSelling}`)
-                    .text(`Produits les moins vendus: ${formData.salesInfo.slowestSelling}`)
-                    .text(`Produits les plus rentables: ${formData.salesInfo.highestProfit}`)
-                    .text(`Produits qui expirent: ${formData.salesInfo.expireProducts}`)
-                    .moveDown();
-
-                // Customers
-                doc.fontSize(14).text('5. CLIENTS', { underline: true })
-                    .fontSize(12)
-                    .text(`Pays de vente: ${formData.customers.countries}`)
-                    .text(`Plus grands clients: ${formData.customers.biggestCustomers}`)
-                    .text(`Type de vente: ${formData.customers.salesType}`)
-                    .moveDown();
-
-                // Warehouses
-                doc.fontSize(14).text('6. ENTREPÔTS', { underline: true })
-                    .fontSize(12)
-                    .text(`Nombre d'entrepôts: ${formData.warehouses.count}`)
-                    .text(`Capacité de stockage: ${formData.warehouses.capacity}`)
-                    .text(`Produits par entrepôt: ${formData.warehouses.products}`)
-                    .moveDown();
-
-                // Business Challenges
-                doc.fontSize(14).text('7. DÉFIS DE L\'ENTREPRISE', { underline: true })
-                    .fontSize(12)
-                    .text(`Principaux problèmes: ${formData.challenges.mainProblems}`)
-                    .text(`Tâches chronophages: ${formData.challenges.timeConsumingTasks}`)
-                    .text(`Décisions difficiles: ${formData.challenges.difficultDecisions}`)
-                    .text(`Attentes IA: ${formData.challenges.aiExpectations}`)
-                    .moveDown();
-
-                // Footer
-                doc.fontSize(10)
-                    .text('Document généré automatiquement par FOFANA Confiserie System', { align: 'center' });
-
-                doc.end();
-
-                writeStream.on('finish', () => resolve(pdfPath));
-                writeStream.on('error', reject);
-
-            } catch (error) {
-                reject(error);
+        attachments: [
+            {
+                filename: `FOFANA_${formData.companyInfo.companyName}_${formData.id}.pdf`,
+                path: pdfPath,
+                contentType: 'application/pdf'
             }
-        });
-    }
+        ]
+    };
 
-    // Route to get all submissions
-    app.get('/get-submissions', (req, res) => {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('📧 Email sent:', info.messageId);
+    return info;
+}
+
+// Function to generate PDF
+async function generatePDF(formData) {
+    return new Promise((resolve, reject) => {
         try {
-            const dataFile = path.join(__dirname, 'data', 'submissions.json');
-            if (fs.existsSync(dataFile)) {
-                const fileContent = fs.readFileSync(dataFile, 'utf8');
-                const data = JSON.parse(fileContent);
-                res.json(data);
-            } else {
-                res.json([]);
-            }
+            const doc = new PDFDocument();
+            const pdfPath = path.join(__dirname, 'pdfs', `submission_${formData.id}.pdf`);
+            const writeStream = fs.createWriteStream(pdfPath);
+
+            doc.pipe(writeStream);
+
+            // Header
+            doc.fontSize(20)
+                .text('FOFANA CONFISERIE', { align: 'center' })
+                .fontSize(16)
+                .text('Formulaire d\'Informations Commerciales', { align: 'center' })
+                .moveDown();
+
+            doc.fontSize(12)
+                .text(`Date de soumission: ${new Date(formData.timestamp).toLocaleDateString('fr-FR')}`)
+                .moveDown();
+
+            // Company Information
+            doc.fontSize(14).text('1. INFORMATIONS SUR L\'ENTREPRISE', { underline: true })
+                .fontSize(12)
+                .text(`Nom officiel: ${formData.companyInfo.companyName}`)
+                .text(`Année de création: ${formData.companyInfo.establishYear}`)
+                .text(`Adresse: ${formData.companyInfo.companyAddress}`)
+                .text(`Emplacement des entrepôts: ${formData.companyInfo.warehouseLocations}`)
+                .moveDown();
+
+            // Suppliers
+            doc.fontSize(14).text('2. INFORMATIONS SUR LES FOURNISSEURS', { underline: true })
+                .fontSize(12);
+            formData.suppliers.forEach((supplier, index) => {
+                doc.text(`Fournisseur ${index + 1}:`)
+                    .text(`  - Entreprise: ${supplier.companyName}`)
+                    .text(`  - Pays: ${supplier.country}`)
+                    .text(`  - Ville: ${supplier.city}`)
+                    .text(`  - Contact: ${supplier.contact}`)
+                    .text(`  - Produits: ${supplier.products}`)
+                    .moveDown(0.5);
+            });
+            doc.moveDown();
+
+            // Import Information
+            doc.fontSize(14).text('3. INFORMATIONS SUR LES IMPORTATIONS', { underline: true })
+                .fontSize(12)
+                .text(`Produits importés: ${formData.importInfo.products}`)
+                .text(`Quantité moyenne: ${formData.importInfo.quantity}`)
+                .text(`Fréquence: ${formData.importInfo.frequency}`)
+                .text(`Durée de transport: ${formData.importInfo.shippingTime}`)
+                .text(`Moyen de transport: ${formData.importInfo.shippingMethod}`)
+                .moveDown();
+
+            // Sales Information
+            doc.fontSize(14).text('4. INFORMATIONS SUR LES VENTES', { underline: true })
+                .fontSize(12)
+                .text(`Produits les plus vendus: ${formData.salesInfo.fastestSelling}`)
+                .text(`Produits les moins vendus: ${formData.salesInfo.slowestSelling}`)
+                .text(`Produits les plus rentables: ${formData.salesInfo.highestProfit}`)
+                .text(`Produits qui expirent: ${formData.salesInfo.expireProducts}`)
+                .moveDown();
+
+            // Customers
+            doc.fontSize(14).text('5. CLIENTS', { underline: true })
+                .fontSize(12)
+                .text(`Pays de vente: ${formData.customers.countries}`)
+                .text(`Plus grands clients: ${formData.customers.biggestCustomers}`)
+                .text(`Type de vente: ${formData.customers.salesType}`)
+                .moveDown();
+
+            // Warehouses
+            doc.fontSize(14).text('6. ENTREPÔTS', { underline: true })
+                .fontSize(12)
+                .text(`Nombre d'entrepôts: ${formData.warehouses.count}`)
+                .text(`Capacité de stockage: ${formData.warehouses.capacity}`)
+                .text(`Produits par entrepôt: ${formData.warehouses.products}`)
+                .moveDown();
+
+            // Business Challenges
+            doc.fontSize(14).text('7. DÉFIS DE L\'ENTREPRISE', { underline: true })
+                .fontSize(12)
+                .text(`Principaux problèmes: ${formData.challenges.mainProblems}`)
+                .text(`Tâches chronophages: ${formData.challenges.timeConsumingTasks}`)
+                .text(`Décisions difficiles: ${formData.challenges.difficultDecisions}`)
+                .text(`Attentes IA: ${formData.challenges.aiExpectations}`)
+                .moveDown();
+
+            // Footer
+            doc.fontSize(10)
+                .text('Document généré automatiquement par FOFANA Confiserie System', { align: 'center' });
+
+            doc.end();
+
+            writeStream.on('finish', () => resolve(pdfPath));
+            writeStream.on('error', reject);
+
         } catch (error) {
-            console.error('Error reading data:', error);
-            res.status(500).json([]);
+            reject(error);
         }
-    });
-
-    // Route to download PDF
-    app.get('/download-pdf/:id', (req, res) => {
-        const id = req.params.id;
-        const pdfPath = path.join(__dirname, 'pdfs', `submission_${id}.pdf`);
-
-        if (fs.existsSync(pdfPath)) {
-            res.download(pdfPath);
-        } else {
-            res.status(404).json({ error: 'PDF not found' });
-        }
-    });
-
-    // Start server
-    app.listen(PORT, '0.0.0.0', () => {
-        console.log(`🚀 Server running on port ${PORT}`);
-        console.log(`🔐 Login: http://localhost:${PORT}`);
-        console.log(`📊 Admin: http://localhost:${PORT}/admin.html`);
-        console.log(`📝 Form: http://localhost:${PORT}/form.html`);
-        console.log('\n📧 Email configuration:');
-        console.log(`   User: ${EMAIL_USER}`);
-        console.log(`   To: ${EMAIL_TO}`);
     });
 }
+
+// Route to get all submissions
+app.get('/get-submissions', (req, res) => {
+    try {
+        const dataFile = path.join(__dirname, 'data', 'submissions.json');
+        if (fs.existsSync(dataFile)) {
+            const fileContent = fs.readFileSync(dataFile, 'utf8');
+            const data = JSON.parse(fileContent);
+            res.json(data);
+        } else {
+            res.json([]);
+        }
+    } catch (error) {
+        console.error('Error reading data:', error);
+        res.status(500).json([]);
+    }
+});
+
+// Route to download PDF
+app.get('/download-pdf/:id', (req, res) => {
+    const id = req.params.id;
+    const pdfPath = path.join(__dirname, 'pdfs', `submission_${id}.pdf`);
+
+    if (fs.existsSync(pdfPath)) {
+        res.download(pdfPath);
+    } else {
+        res.status(404).json({ error: 'PDF not found' });
+    }
+});
+
+// Start server
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🔐 Login: http://localhost:${PORT}`);
+    console.log(`📊 Admin: http://localhost:${PORT}/admin.html`);
+    console.log(`📝 Form: http://localhost:${PORT}/form.html`);
+    console.log('\n📧 Email configuration:');
+    console.log(`   User: ${EMAIL_USER}`);
+    console.log(`   To: ${EMAIL_TO}`);
+});

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Succès - FOFANA Confiserie</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .success-container {
+            max-width: 600px;
+            margin: 100px auto;
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            font-size: 80px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        .success-title {
+            font-size: 32px;
+            color: #2d3748;
+            margin: 20px 0 10px 0;
+        }
+
+        .success-message {
+            font-size: 18px;
+            color: #718096;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .success-details {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .success-details p {
+            margin: 8px 0;
+            color: #2d3748;
+        }
+
+        .success-details strong {
+            color: #4a5568;
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #4a5568;
+            padding: 14px 40px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+        }
+
+        .btn-outline:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        .sparkles {
+            font-size: 24px;
+            margin: 0 5px;
+        }
+
+        @media (max-width: 600px) {
+            .success-container {
+                margin: 50px 20px;
+                padding: 30px;
+            }
+
+            .success-title {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="success-container">
+            <div class="success-icon">🎉</div>
+            <h1 class="success-title">Formulaire Soumis avec Succès !</h1>
+            <p class="success-message">
+                Merci d'avoir pris le temps de remplir ce formulaire.<br>
+                Vos informations ont été enregistrées avec succès.
+            </p>
+
+            <div class="success-details">
+                <p><strong>📅 Date:</strong> <span id="submissionDate"></span></p>
+                <p><strong>🕐 Heure:</strong> <span id="submissionTime"></span></p>
+                <p><strong>📊 Statut:</strong> <span style="color: #48bb78; font-weight: bold;">✓ Confirmé</span></p>
+            </div>
+
+            <div>
+                <a href="/form.html" class="btn-success">
+                    ✏️ Remplir un autre formulaire
+                </a>
+                <br>
+                <a href="/" class="btn-outline">
+                    🏠 Retour à l'accueil
+                </a>
+            </div>
+
+            <p style="margin-top: 30px; color: #a0aec0; font-size: 14px;">
+                <span class="sparkles">✨</span>
+                FOFANA Confiserie - Système d'Administration
+                <span class="sparkles">✨</span>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Display current date and time
+        const now = new Date();
+        document.getElementById('submissionDate').textContent = now.toLocaleDateString('fr-FR', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        document.getElementById('submissionTime').textContent = now.toLocaleTimeString('fr-FR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+
+        // Check if form was submitted successfully
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.get('success')) {
+            // Redirect to form if accessed directly
+            window.location.href = '/form.html';
+        }
+    </script>
+</body>
+
+</html>

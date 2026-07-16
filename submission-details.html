@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Détails de la Soumission</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>📋 Détails de la Soumission</h1>
+            <div id="submissionDetails">
+                <p>Chargement...</p>
+            </div>
+            <button onclick="window.close()" class="btn-primary" style="margin-top: 20px;">Fermer</button>
+        </div>
+    </div>
+    <script>
+        // Get submission ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+
+        async function loadSubmissionDetails() {
+            try {
+                const response = await fetch('/get-submissions');
+                const data = await response.json();
+                const submission = data.find(s => s.id === id);
+
+                if (!submission) {
+                    document.getElementById('submissionDetails').innerHTML = '<p>Soumission non trouvée.</p>';
+                    return;
+                }
+
+                const details = `
+                    <div class="section">
+                        <h3>Informations sur l'entreprise</h3>
+                        <p><strong>Nom:</strong> ${submission.companyInfo.companyName}</p>
+                        <p><strong>Année:</strong> ${submission.companyInfo.establishYear}</p>
+                        <p><strong>Adresse:</strong> ${submission.companyInfo.companyAddress}</p>
+                        <p><strong>Entrepôts:</strong> ${submission.companyInfo.warehouseLocations}</p>
+                    </div>
+                    <div class="section">
+                        <h3>Fournisseurs (${submission.suppliers.length})</h3>
+                        ${submission.suppliers.map((s, i) => `
+                            <div style="margin-bottom: 10px; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+                                <strong>Fournisseur ${i + 1}:</strong><br>
+                                Entreprise: ${s.companyName}<br>
+                                Pays: ${s.country}<br>
+                                Ville: ${s.city}<br>
+                                Contact: ${s.contact}<br>
+                                Produits: ${s.products}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="section">
+                        <h3>Importations</h3>
+                        <p><strong>Produits:</strong> ${submission.importInfo.products}</p>
+                        <p><strong>Quantité:</strong> ${submission.importInfo.quantity}</p>
+                        <p><strong>Fréquence:</strong> ${submission.importInfo.frequency}</p>
+                        <p><strong>Transport:</strong> ${submission.importInfo.shippingTime} (${submission.importInfo.shippingMethod})</p>
+                    </div>
+                    <div class="section">
+                        <h3>Ventes</h3>
+                        <p><strong>Plus rapides:</strong> ${submission.salesInfo.fastestSelling}</p>
+                        <p><strong>Plus lents:</strong> ${submission.salesInfo.slowestSelling}</p>
+                        <p><strong>Plus rentables:</strong> ${submission.salesInfo.highestProfit}</p>
+                        <p><strong>Expirent:</strong> ${submission.salesInfo.expireProducts}</p>
+                    </div>
+                    <div class="section">
+                        <h3>Clients</h3>
+                        <p><strong>Pays:</strong> ${submission.customers.countries}</p>
+                        <p><strong>Grands clients:</strong> ${submission.customers.biggestCustomers}</p>
+                        <p><strong>Type de vente:</strong> ${submission.customers.salesType}</p>
+                    </div>
+                    <div class="section">
+                        <h3>Entrepôts</h3>
+                        <p><strong>Nombre:</strong> ${submission.warehouses.count}</p>
+                        <p><strong>Capacité:</strong> ${submission.warehouses.capacity}</p>
+                        <p><strong>Produits:</strong> ${submission.warehouses.products}</p>
+                    </div>
+                    <div class="section">
+                        <h3>Défis de l'entreprise</h3>
+                        <p><strong>Problèmes:</strong> ${submission.challenges.mainProblems}</p>
+                        <p><strong>Tâches chronophages:</strong> ${submission.challenges.timeConsumingTasks}</p>
+                        <p><strong>Décisions difficiles:</strong> ${submission.challenges.difficultDecisions}</p>
+                        <p><strong>Attentes IA:</strong> ${submission.challenges.aiExpectations}</p>
+                    </div>
+                `;
+
+                document.getElementById('submissionDetails').innerHTML = details;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('submissionDetails').innerHTML = '<p>Erreur de chargement.</p>';
+            }
+        }
+
+        loadSubmissionDetails();
+    </script>
+</body>
+
+</html>

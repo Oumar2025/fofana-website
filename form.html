@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FOFANA Confiserie - Formulaire</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-container">
+            <div class="header">
+                <h1>🍫 ETS FOFANA CONFISERIE</h1>
+                <h2>Formulaire d'Informations Commerciales</h2>
+                <p class="welcome-message">Bienvenue ! Veuillez remplir ce formulaire pour nous aider à améliorer nos
+                    systèmes.</p>
+            </div>
+
+            <form id="companyForm">
+                <!-- Company Information -->
+                <div class="section">
+                    <h3>Informations sur l'entreprise</h3>
+                    <div class="form-group">
+                        <label>Nom officiel de l'entreprise *</label>
+                        <input type="text" id="companyName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Année de création de l'entreprise *</label>
+                        <input type="number" id="establishYear" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Adresse de l'entreprise *</label>
+                        <input type="text" id="companyAddress" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Emplacement(s) principal(aux) des entrepôts *</label>
+                        <input type="text" id="warehouseLocations" required>
+                    </div>
+                </div>
+
+                <!-- Supplier Information -->
+                <div class="section">
+                    <h3>Informations sur les fournisseurs (les pays d'où vous exportez !)</h3>
+                    <div id="supplierContainer">
+                        <div class="supplier-entry">
+                            <div class="form-group">
+                                <label>Nom de l'entreprise *</label>
+                                <input type="text" class="supplier-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Pays *</label>
+                                <input type="text" class="supplier-country" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Ville *</label>
+                                <input type="text" class="supplier-city" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Personne de contact (si possible)</label>
+                                <input type="text" class="supplier-contact">
+                            </div>
+                            <div class="form-group">
+                                <label>Produits fournis * (les produits que vous exportez de ce pays mentionné
+                                    !)</label>
+                                <input type="text" class="supplier-products" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-secondary" onclick="addSupplier()">+ Ajouter un
+                        fournisseur</button>
+                </div>
+
+                <!-- Import Information -->
+                <div class="section">
+                    <h3>Informations sur les importations</h3>
+                    <div class="form-group">
+                        <label>Quels sont les produits importés ? *</label>
+                        <textarea id="importProducts" rows="10" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantité moyenne importée *</label>
+                        <input type="text" id="importQuantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label>À quelle fréquence importons-nous ? *</label>
+                        <select id="importFrequency" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="hebdomadaire">Chaque semaine</option>
+                            <option value="mensuel">Chaque mois</option>
+                            <option value="trimestriel">Chaque trimestre</option>
+                            <option value="annuel">Chaque année</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Durée moyenne du transport *</label>
+                        <input type="text" id="shippingTime" placeholder="Ex: 2 semaines" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Principal moyen de transport *</label>
+                        <select id="shippingMethod" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="maritime">Maritime</option>
+                            <option value="routier">Routier</option>
+                            <option value="aérien">Aérien</option>
+                            <option value="mixte">Mixte</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sales Information -->
+                <div class="section">
+                    <h3>Informations sur les ventes</h3>
+                    <div class="form-group">
+                        <label>Quels sont les produits qui se vendent le plus rapidement ? *</label>
+                        <input type="text" id="fastestSelling" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Quels sont les produits qui se vendent le plus lentement ? *</label>
+                        <input type="text" id="slowestSelling" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Quels sont les produits qui génèrent le plus de bénéfices ? *</label>
+                        <input type="text" id="highestProfit" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Quels sont les produits qui expirent généralement avant d'être vendus ?</label>
+                        <input type="text" id="expireProducts">
+                    </div>
+                </div>
+
+                <!-- Customers -->
+                <div class="section">
+                    <h3>Clients (Or the countries you importing to !)</h3>
+                    <div class="form-group">
+                        <label>Dans quels pays vendons-nous actuellement nos produits ? *</label>
+                        <input type="text" id="customerCountries" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Qui sont nos plus grands clients ? *</label>
+                        <input type="text" id="biggestCustomers" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Vendons-nous en gros, au détail ou les deux ? *</label>
+                        <select id="salesType" required>
+                            <option value="">Sélectionnez...</option>
+                            <option value="gros">En gros</option>
+                            <option value="detail">Au détail</option>
+                            <option value="les deux">Les deux</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Warehouses -->
+                <div class="section">
+                    <h3>Entrepôts</h3>
+                    <div class="form-group">
+                        <label>Combien d'entrepôts possédons-nous ? *</label>
+                        <input type="number" id="warehouseCount" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Quelle est leur capacité de stockage approximative ? *</label>
+                        <input type="text" id="storageCapacity" placeholder="Ex: 5000 m²" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Veuillez lister vos entrepôts et le pays où ils sont situés ! *</label>
+                        <textarea id="warehouseLocations" rows="6" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Quels produits sont stockés dans chaque entrepôt ? *</label>
+                        <textarea id="warehouseProducts" rows="3" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Business Challenges -->
+                <div class="section">
+                    <h3>Défis de l'entreprise</h3>
+                    <div class="form-group">
+                        <label>Quels sont les principaux problèmes auxquels l'entreprise est actuellement confrontée ?
+                            *</label>
+                        <textarea id="mainProblems" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Quelles sont les tâches qui prennent le plus de temps ? *</label>
+                        <textarea id="timeConsumingTasks" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Quelles sont les décisions les plus difficiles à prendre ? *</label>
+                        <textarea id="difficultDecisions" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Qu'aimerais-tu que le système d'intelligence artificielle puisse faire pour l'entreprise
+                            à l'avenir ? *</label>
+                        <textarea id="aiExpectations" rows="4" required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Soumettre le formulaire</button>
+                    <button type="reset" class="btn-secondary">Réinitialiser</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

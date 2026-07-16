@@ -28,11 +28,11 @@ if (!fs.existsSync(pdfDir)) {
 }
 
 // ==================== EMAIL CONFIGURATION ====================
-// REPLACE THESE WITH YOUR ACTUAL EMAIL AND APP PASSWORD
-const EMAIL_USER = 'hp.oumaroulife2023@gmail.com';  // CHANGE THIS
-const EMAIL_PASS = 'qtma zgby qnly uulx';   // CHANGE THIS - Your 16-char app password
-const EMAIL_TO = 'f.oumarou78@gmail.com';    // CHANGE THIS - Where to send notifications
-
+// ==================== EMAIL CONFIGURATION ====================
+const EMAIL_USER = process.env.EMAIL_USER || 'hp.oumaroulife2023@gmail.com';
+const EMAIL_PASS = process.env.EMAIL_PASS || 'qtma zgby qnly uulx';
+const EMAIL_TO = process.env.EMAIL_TO || 'f.oumarou78@gmail.com';
+// ============================================================
 const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {

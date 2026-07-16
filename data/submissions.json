@@ -1,1 +1,51 @@
-[]
+[
+  {
+    "companyInfo": {
+      "companyName": "OUSSOUF",
+      "establishYear": "-1",
+      "companyAddress": "Cimahi, Cicantayan, Sukabumi Regency, Indonesia, West Java",
+      "warehouseLocations": "gfgf"
+    },
+    "suppliers": [
+      {
+        "companyName": "ggfbb",
+        "country": "cbvb",
+        "city": "gnvcvn",
+        "contact": "ddfvb",
+        "products": "gfd"
+      }
+    ],
+    "importInfo": {
+      "products": "edcv",
+      "quantity": "gefed",
+      "frequency": "trimestriel",
+      "shippingTime": "fdfgg",
+      "shippingMethod": "routier"
+    },
+    "salesInfo": {
+      "fastestSelling": "fdgf",
+      "slowestSelling": "kal",
+      "highestProfit": "Not found",
+      "expireProducts": "kalku"
+    },
+    "customers": {
+      "countries": "Mali",
+      "biggestCustomers": "mali",
+      "salesType": "les deux"
+    },
+    "warehouses": {
+      "count": "35",
+      "capacity": "etghgf",
+      "locations": "gfgf",
+      "products": "rghhtrv"
+    },
+    "challenges": {
+      "mainProblems": "gcvtb",
+      "timeConsumingTasks": "gfbg.nt.gh",
+      "difficultDecisions": "rgb",
+      "aiExpectations": "edb"
+    },
+    "timestamp": "2026-07-16T13:46:36.900Z",
+    "id": "1784209596903"
+  }
+]

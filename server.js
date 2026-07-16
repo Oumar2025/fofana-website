@@ -29,7 +29,7 @@ if (!fs.existsSync(pdfDir)) {
 
 // ==================== EMAIL CONFIGURATION (Brevo) ====================
 const EMAIL_USER = process.env.EMAIL_USER || 'hp.oumaroulife2023@gmail.com'; // Your Brevo login email
-const EMAIL_PASS = process.env.EMAIL_PASS || 'xsmtpsib-7731508de901b2b353ac9349529f10c2ec0d83abc2fd20159479fce1d1f14da5-kkaSUH0MlQObop6d'; // Your SMTP Key
+const EMAIL_PASS = process.env.EMAIL_PASS || ''; // Your SMTP Key
 const EMAIL_TO = process.env.EMAIL_TO || 'f.oumarou78@gmail.com'; // Where to receive notifications
 const EMAIL_FROM = process.env.EMAIL_FROM || 'hp.oumaroulife2023@gmail.com'; // Sender email
 
